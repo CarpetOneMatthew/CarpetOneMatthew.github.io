@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Not found · carpetonerd</title>
+<script>
+// Old addresses keep working: the tools' GitHub names before the move,
+// and /safety/... deep links. Anything else shows "not found".
+(function () {
+  var moved = {
+    'rdco-tracker': '/tracker',
+    'sample-tracker': '/samples',
+    'rdco-insurance': '/insurance',
+    'safety': 'https://safety.carpetonerd.ca'
+  };
+  var parts = location.pathname.split('/');
+  var to = moved[(parts[1] || '').toLowerCase()];
+  if (to) {
+    var rest = parts.slice(2).join('/');
+    location.replace(to + '/' + rest + location.search + location.hash);
+  }
+})();
+</script>
+<style>
+  body { margin: 0; padding: 56px 16px; background: #f6f7f9; color: #101418;
+         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; }
+  @media (prefers-color-scheme: dark) { body { background: #0d1016; color: #edf0f6; } a { color: #7fe3eb; } }
+  main { max-width: 960px; margin: 0 auto; }
+  a { color: #00767e; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Page not found</h1>
+  <p><a href="/">Back to carpetonerd.ca</a></p>
+</main>
+</body>
+</html>
