@@ -1,0 +1,6 @@
+# Notes and tools stay on this PC. GitHub Pages publishes every file in the
+# repo, so anything committed here is public at carpetonerd.ca/<file>.
+CLAUDE.md
+HANDOFF.md
+tools/
+.claude/
