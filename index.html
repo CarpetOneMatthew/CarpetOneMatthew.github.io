@@ -6,38 +6,53 @@
 <title>carpetonerd</title>
 <meta name="description" content="Staff tools for Red Deer Carpet One">
 <meta name="robots" content="noindex">
-<meta name="theme-color" content="#f6f7f9" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0d1016" media="(prefers-color-scheme: dark)">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#151922" media="(prefers-color-scheme: dark)">
 <link rel="icon" href="favicon-64.png" type="image/png">
 <link rel="apple-touch-icon" href="icons/home-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500&family=Sora:wght@400..700&display=swap" rel="stylesheet">
 <style>
-/* The RDCO look (same tokens as RDCO Safety and the Project Tracker). */
+/* The RDCO look: the same tokens, top bar and teal band as the Project
+   Tracker, laid out on a Swiss grid (hairline rules, numbered rows,
+   one big headline). */
 :root {
   --page: #f6f7f9;
   --surface: #ffffff;
+  --surface-2: #f1f3f6;
   --line: #e2e6eb;
+  --line-2: #c9d0d8;
   --ink: #101418;
   --ink-2: #616978;
+  --ink-3: #8a93a3;
   --teal: #009ba5;
   --teal-strong: #00767e;
-  --row-hover: #f2fafb;
-  --shadow: 0 1px 2px rgba(16, 20, 24, 0.04);
+  --teal-tint: #e4f5f6;
+  --band: #00767e;
+  --band-soft: #e4f5f6;
+  --band-grid: rgba(255, 255, 255, 0.07);
+  --lift: 0 8px 20px rgba(16, 20, 24, 0.08);
   --font-sans: Sora, -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Mono', Consolas, monospace;
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 @media (prefers-color-scheme: dark) {
   :root {
     --page: #0d1016;
     --surface: #151922;
+    --surface-2: #1d2230;
     --line: #232839;
+    --line-2: #343b50;
     --ink: #edf0f6;
     --ink-2: #98a0b5;
+    --ink-3: #6c7489;
     --teal: #22c0cb;
     --teal-strong: #7fe3eb;
-    --row-hover: #1d2230;
-    --shadow: none;
+    --teal-tint: #12303a;
+    --band: #0a5c63;
+    --lift: 0 8px 20px rgba(0, 0, 0, 0.35);
   }
 }
 * { box-sizing: border-box; }
@@ -48,138 +63,516 @@ body {
   color: var(--ink);
   font-family: var(--font-sans);
   line-height: 1.45;
+  letter-spacing: -0.004em;
+  -webkit-font-smoothing: antialiased;
 }
-main {
-  max-width: 960px;
+.wrap {
+  max-width: 1248px;
   margin: 0 auto;
-  padding: 56px 16px 40px;
+  padding-left: 24px;
+  padding-right: 24px;
 }
 
-/* The carpetonerd badge: one word, carpet-o-nerd. */
-.hero { text-align: center; }
-.hero h1 { margin: 0; line-height: 0; }
-.logo {
-  width: 200px;
-  height: 200px;
+/* ── Top bar: the tracker's, with carpetonerd where the section name goes ── */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
 }
-.tagline {
-  margin: 16px 0 0;
-  color: var(--ink-2);
-  font-size: 15px;
+.topbar-in {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  column-gap: 16px;
+  padding-top: 10px;
+  padding-bottom: 10px;
 }
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
+.brand {
+  justify-self: start;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: var(--ink);
+  font-size: 14.5px;
+  font-weight: 600;
+  letter-spacing: -0.012em;
+  text-decoration: none;
   white-space: nowrap;
 }
+.rdco {
+  display: grid;
+  place-items: center;
+  height: 22px;
+  padding: 0 7px;
+  border-radius: 7px;
+  background: #009ba5;
+  color: #fff;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+/* One word, carpet-o-nerd, with the nerd showing. */
+.word b { color: var(--teal-strong); font-weight: 700; }
+
+.depts {
+  justify-self: center;
+  display: flex;
+  gap: 2px;
+  max-width: 100%;
+  padding: 2px;
+  border-radius: 9px;
+  background: var(--surface-2);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.depts::-webkit-scrollbar { display: none; }
+.depts a {
+  padding: 5px 12px;
+  border-radius: 6px;
+  color: var(--ink-2);
+  font-size: 13px;
+  font-weight: 450;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+}
+.depts a:hover {
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: 0 1px 2px rgba(16, 20, 24, 0.13);
+}
+.depts a:focus-visible { outline: 2px solid var(--teal); outline-offset: 1px; }
+.depts .n {
+  margin-left: 5px;
+  font-size: 11px;
+  font-weight: 600;
+  opacity: 0.6;
+  font-variant-numeric: tabular-nums;
+}
+.today {
+  justify-self: end;
+  display: flex;
+  align-items: center;
+  height: 32px;
+  padding: 0 12px;
+  border-radius: 20px;
+  background: var(--teal-tint);
+  color: var(--teal-strong);
+  font-size: 12.5px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.today:empty { display: none; }
+
+/* ── Hero: the teal band, ruled like carpet tiles ── */
+.band {
+  overflow: hidden;
+  background-color: var(--band);
+  background-image:
+    linear-gradient(var(--band-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--band-grid) 1px, transparent 1px);
+  background-size: 48px 48px;
+  background-position: -1px -1px;
+  color: #fff;
+}
+.hero {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: 24px;
+  align-items: center;
+  padding-top: clamp(36px, 5vw, 64px);
+  padding-bottom: clamp(36px, 5vw, 64px);
+}
+.hero-text { grid-column: 1 / span 8; }
+.hero-badge { grid-column: 9 / span 4; justify-self: center; }
+.eyebrow {
+  margin: 0 0 16px;
+  color: var(--band-soft);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+h1 {
+  margin: 0;
+  font-size: clamp(2.75rem, 6.2vw, 4.75rem);
+  font-weight: 700;
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+}
+.lede {
+  max-width: 36ch;
+  margin: 20px 0 0;
+  color: var(--band-soft);
+  font-size: clamp(1rem, 1.4vw, 1.1875rem);
+  line-height: 1.55;
+}
+.stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 28px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.stats li {
+  padding: 6px 12px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.12);
+  font-size: 13px;
+}
+.stats b { margin-right: 4px; font-weight: 700; font-variant-numeric: tabular-nums; }
+/* Slapped on like a sticker; straightens up when you look at it. */
+.badge {
+  display: block;
+  width: clamp(180px, 20vw, 248px);
+  height: auto;
+  transform: rotate(-7deg);
+  filter: drop-shadow(8px 10px 0 rgba(0, 0, 0, 0.2));
+  transition: transform 0.35s var(--ease);
+}
+.badge:hover { transform: rotate(0deg) scale(1.03); }
+
+/* ── Departments: one numbered row each ── */
+.list {
+  padding-top: clamp(32px, 4.5vw, 56px);
+  padding-bottom: clamp(32px, 5vw, 56px);
+}
+.list-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding-top: 12px;
+  border-top: 2px solid var(--ink);
+}
+.label {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.count { color: var(--ink-2); font-family: var(--font-mono); font-size: 12px; }
+.dept {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: 24px;
+  row-gap: 16px;
+  padding: 32px 0;
+  border-bottom: 1px solid var(--line);
+  scroll-margin-top: 64px;
+}
+.dept-head { grid-column: 1 / span 4; }
+.num {
+  display: block;
+  color: var(--teal-strong);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 500;
+}
+.dept h2 {
+  margin: 6px 0 0;
+  font-size: 1.625rem;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.025em;
+  transition: color 0.3s;
+}
+.dept:target h2 { color: var(--teal-strong); }
+.dept-line { margin: 6px 0 0; color: var(--ink-2); font-size: 14.5px; }
+.soon-dept { padding: 24px 0; }
+.soon-dept .num { color: var(--ink-3); }
 
 .tools {
+  grid-column: 5 / span 8;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-content: start;
   gap: 12px;
-  margin: 36px 0 0;
+  margin: 0;
   padding: 0;
   list-style: none;
 }
 .tool {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 14px;
   height: 100%;
-  padding: 16px;
+  padding: 16px 44px 16px 16px;
   border: 1px solid var(--line);
-  border-radius: 16px;
+  border-radius: 8px;
   background: var(--surface);
-  box-shadow: var(--shadow);
   color: inherit;
   text-decoration: none;
-  transition: border-color 0.15s, background 0.15s;
+  transition: border-color 0.2s var(--ease), box-shadow 0.2s var(--ease), transform 0.2s var(--ease);
 }
-.tool:hover { border-color: var(--teal); background: var(--row-hover); }
+.tool:hover { border-color: var(--teal); box-shadow: var(--lift); transform: translateY(-2px); }
+.tool:active { transform: translateY(-1px); }
 .tool:focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; }
-.tool img {
-  flex: none;
-  width: 56px;
-  height: 56px;
-  border-radius: 13px;
-}
-.tool > span { min-width: 0; }
-.tool-name {
-  display: block;
-  font-weight: 600;
-  font-size: 16px;
-}
-.tool-what {
-  display: block;
-  margin-top: 2px;
-  color: var(--ink-2);
-  font-size: 13.5px;
-}
+.tool img { flex: none; width: 48px; height: 48px; border-radius: 11px; }
+.tool-body { min-width: 0; }
+.nowrap { white-space: nowrap; }
+.tool-name { display: block; font-size: 15.5px; font-weight: 600; letter-spacing: -0.01em; }
+.tool-what { display: block; margin-top: 2px; color: var(--ink-2); font-size: 13.5px; line-height: 1.4; }
 .tool-where {
   display: block;
   margin-top: 6px;
   color: var(--teal-strong);
-  font-size: 12.5px;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
   overflow-wrap: anywhere;
 }
+.go {
+  position: absolute;
+  top: 50%;
+  right: 16px;
+  width: 18px;
+  height: 18px;
+  margin-top: -9px;
+  color: var(--ink-3);
+  transition: transform 0.2s var(--ease), color 0.2s;
+}
+.tool:hover .go { color: var(--teal-strong); transform: translateX(3px); }
 
-.nowrap { white-space: nowrap; }
-@media (max-width: 480px) {
-  main { padding-top: 32px; }
-  .logo { width: 168px; height: 168px; }
-  .tools { grid-template-columns: 1fr; margin-top: 28px; }
+/* An empty slot where the first card will go. */
+.soon {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+  padding: 14px 16px;
+  border: 1.5px dashed var(--line-2);
+  border-radius: 8px;
+  color: var(--ink-2);
+  font-size: 13.5px;
+}
+.soon-tag {
+  color: var(--ink);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.foot {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px 24px;
+  padding-bottom: 40px;
+  color: var(--ink-2);
+  font-size: 13px;
+}
+.foot b { color: var(--teal-strong); font-weight: 700; }
+
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+  .rise { animation: rise 0.42s var(--ease) both; animation-delay: calc(var(--i, 0) * 80ms); }
+  @keyframes rise { from { opacity: 0; transform: translateY(16px); } }
+}
+
+@media (max-width: 1100px) {
+  .today { display: none; }
+}
+@media (max-width: 860px) {
+  /* Two rows, like the tracker on a phone: the mark on top, the
+     departments full width underneath, scrolling sideways if they must. */
+  .topbar-in { display: flex; flex-wrap: wrap; row-gap: 8px; }
+  .depts { flex: 1 0 100%; }
+  .dept { scroll-margin-top: 100px; }
+}
+@media (max-width: 767px) {
+  .wrap { padding-left: 16px; padding-right: 16px; }
+  .hero { grid-template-columns: 1fr; row-gap: 20px; padding-top: 28px; padding-bottom: 32px; }
+  .hero-text, .hero-badge { grid-column: 1; }
+  .hero-badge { order: -1; justify-self: start; }
+  .badge { width: 104px; filter: drop-shadow(5px 6px 0 rgba(0, 0, 0, 0.2)); }
+  .eyebrow { margin-bottom: 12px; }
+  .lede { margin-top: 14px; font-size: 15.5px; }
+  .stats { margin-top: 20px; }
+  .dept { grid-template-columns: 1fr; padding: 24px 0; }
+  .soon-dept { padding: 20px 0; }
+  .dept-head, .tools { grid-column: 1; }
+  .dept-head { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 10px; }
+  .dept h2 { margin: 0; font-size: 1.4rem; }
+  .dept-line { flex-basis: 100%; margin-top: 4px; }
+  .tools { grid-template-columns: 1fr; }
 }
 </style>
 </head>
 <body>
-<main>
-  <header class="hero">
-    <h1><img class="logo" src="logo-teal.webp" alt=""><span class="sr-only">carpetonerd</span></h1>
-    <p class="tagline">Staff tools</p>
-  </header>
+<header class="topbar">
+  <div class="wrap topbar-in">
+    <a class="brand" href="#"><span class="rdco">RDCO</span><span class="word">carpeto<b>nerd</b></span></a>
+    <nav class="depts" aria-label="Departments">
+      <a href="#commercial">Commercial<span class="n">2</span></a>
+      <a href="#insurance">Insurance<span class="n">2</span></a>
+      <a href="#safety">Safety<span class="n">1</span></a>
+      <a href="#products">Products<span class="n">1</span></a>
+      <a href="#installations">Installations</a>
+      <a href="#sales">Sales</a>
+      <a href="#accounting">Accounting</a>
+    </nav>
+    <span class="today" id="today"></span>
+  </div>
+</header>
 
-  <ul class="tools">
-    <li><a class="tool" href="/safety/">
-      <img src="icons/safety.png" alt="">
-      <span><span class="tool-name">RDCO Safety</span>
-        <span class="tool-what">FLHAs, site inspections and <span class="nowrap">sign-offs</span></span>
-        <span class="tool-where">carpetonerd.ca/safety</span></span>
-    </a></li>
-    <li><a class="tool" href="/tracker/">
-      <img src="icons/tracker.png" alt="">
-      <span><span class="tool-name">Project Tracker</span>
-        <span class="tool-what">Commercial jobs, quotes and installers</span>
-        <span class="tool-where">carpetonerd.ca/tracker</span></span>
-    </a></li>
-    <li><a class="tool" href="/dashboard/">
-      <img src="icons/dashboard.png" alt="">
-      <span><span class="tool-name">Operations Dashboard</span>
-        <span class="tool-what">The office wall screen for commercial jobs</span>
-        <span class="tool-where">carpetonerd.ca/dashboard</span></span>
-    </a></li>
-    <li><a class="tool" href="/samples/">
-      <img src="icons/samples.png" alt="">
-      <span><span class="tool-name">Sample Tracker</span>
-        <span class="tool-what">Commercial flooring samples</span>
-        <span class="tool-where">carpetonerd.ca/samples</span></span>
-    </a></li>
-    <li><a class="tool" href="/insurance/">
-      <img src="icons/insurance.png" alt="">
-      <span><span class="tool-name">Insurance Tracker</span>
-        <span class="tool-what">Insurance claims, from quote to close</span>
-        <span class="tool-where">carpetonerd.ca/insurance</span></span>
-    </a></li>
-    <li><a class="tool" href="/insurance/dashboard.html">
-      <img src="icons/insurance-board.png" alt="">
-      <span><span class="tool-name">Insurance Board</span>
-        <span class="tool-what">The wall screen for insurance claims</span>
-        <span class="tool-where">carpetonerd.ca/insurance<wbr>/dashboard</span></span>
-    </a></li>
-  </ul>
+<section class="band">
+  <div class="wrap hero">
+    <div class="hero-text rise">
+      <p class="eyebrow" id="hello">Hello, nerds</p>
+      <h1>Wall-to-wall tools.</h1>
+      <p class="lede">Every department's apps in one place, from the first quote to the last seam.</p>
+      <ul class="stats">
+        <li><b>6</b>tools live</li>
+        <li><b>7</b>departments</li>
+        <li><b>3</b>on the way</li>
+      </ul>
+    </div>
+    <div class="hero-badge">
+      <img class="badge" src="logo-cream.webp" width="300" height="300" alt="carpetonerd, Red Deer Carpet One">
+    </div>
+  </div>
+</section>
 
+<main class="wrap list">
+  <div class="list-head">
+    <p class="label">Departments</p>
+    <span class="count">07</span>
+  </div>
+
+  <section class="dept rise" id="commercial" style="--i:1">
+    <div class="dept-head">
+      <span class="num">01</span>
+      <h2>Commercial</h2>
+      <p class="dept-line">Big floors, tight schedules.</p>
+    </div>
+    <ul class="tools">
+      <li><a class="tool" href="/tracker/">
+        <img src="icons/tracker.png" width="48" height="48" alt="">
+        <span class="tool-body"><span class="tool-name">Project Tracker</span>
+          <span class="tool-what">Jobs, quotes and installers</span>
+          <span class="tool-where">carpetonerd.ca/tracker</span></span>
+        <svg class="go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a></li>
+      <li><a class="tool" href="/dashboard/">
+        <img src="icons/dashboard.png" width="48" height="48" alt="">
+        <span class="tool-body"><span class="tool-name">Operations Dashboard</span>
+          <span class="tool-what">The office wall screen for jobs</span>
+          <span class="tool-where">carpetonerd.ca/dashboard</span></span>
+        <svg class="go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a></li>
+    </ul>
+  </section>
+
+  <section class="dept rise" id="insurance" style="--i:2">
+    <div class="dept-head">
+      <span class="num">02</span>
+      <h2>Insurance</h2>
+      <p class="dept-line">Getting homes back on their feet.</p>
+    </div>
+    <ul class="tools">
+      <li><a class="tool" href="/insurance/">
+        <img src="icons/insurance.png" width="48" height="48" alt="">
+        <span class="tool-body"><span class="tool-name">Insurance Tracker</span>
+          <span class="tool-what">Claims, from quote to close</span>
+          <span class="tool-where">carpetonerd.ca/insurance</span></span>
+        <svg class="go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a></li>
+      <li><a class="tool" href="/insurance/dashboard.html">
+        <img src="icons/insurance-board.png" width="48" height="48" alt="">
+        <span class="tool-body"><span class="tool-name">Insurance Board</span>
+          <span class="tool-what">The wall screen for claims</span>
+          <span class="tool-where">carpetonerd.ca/insurance<wbr>/dashboard</span></span>
+        <svg class="go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a></li>
+    </ul>
+  </section>
+
+  <section class="dept rise" id="safety" style="--i:3">
+    <div class="dept-head">
+      <span class="num">03</span>
+      <h2>Safety</h2>
+      <p class="dept-line">Everyone home safe, every day.</p>
+    </div>
+    <ul class="tools">
+      <li><a class="tool" href="/safety/">
+        <img src="icons/safety.png" width="48" height="48" alt="">
+        <span class="tool-body"><span class="tool-name">RDCO Safety</span>
+          <span class="tool-what">FLHAs, site inspections and <span class="nowrap">sign-offs</span></span>
+          <span class="tool-where">carpetonerd.ca/safety</span></span>
+        <svg class="go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a></li>
+    </ul>
+  </section>
+
+  <section class="dept rise" id="products" style="--i:4">
+    <div class="dept-head">
+      <span class="num">04</span>
+      <h2>Products</h2>
+      <p class="dept-line">Every sample, accounted for.</p>
+    </div>
+    <ul class="tools">
+      <li><a class="tool" href="/samples/">
+        <img src="icons/samples.png" width="48" height="48" alt="">
+        <span class="tool-body"><span class="tool-name">Sample Tracker</span>
+          <span class="tool-what">Commercial flooring samples</span>
+          <span class="tool-where">carpetonerd.ca/samples</span></span>
+        <svg class="go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a></li>
+    </ul>
+  </section>
+
+  <section class="dept soon-dept rise" id="installations" style="--i:5">
+    <div class="dept-head">
+      <span class="num">05</span>
+      <h2>Installations</h2>
+      <p class="dept-line">Measure twice, launch once.</p>
+    </div>
+    <ul class="tools">
+      <li class="soon"><span class="soon-tag">Coming soon</span>Got an idea for it? Tell Matt.</li>
+    </ul>
+  </section>
+
+  <section class="dept soon-dept rise" id="sales" style="--i:6">
+    <div class="dept-head">
+      <span class="num">06</span>
+      <h2>Sales</h2>
+      <p class="dept-line">Being quoted as we speak.</p>
+    </div>
+    <ul class="tools">
+      <li class="soon"><span class="soon-tag">Coming soon</span>Got an idea for it? Tell Matt.</li>
+    </ul>
+  </section>
+
+  <section class="dept soon-dept rise" id="accounting" style="--i:7">
+    <div class="dept-head">
+      <span class="num">07</span>
+      <h2>Accounting</h2>
+      <p class="dept-line">Still adding it all up.</p>
+    </div>
+    <ul class="tools">
+      <li class="soon"><span class="soon-tag">Coming soon</span>Got an idea for it? Tell Matt.</li>
+    </ul>
+  </section>
 </main>
+
+<footer class="wrap foot">
+  <span>carpeto<b>nerd</b> · Red Deer Carpet One</span>
+  <span>Staff only. Please wipe your feet.</span>
+</footer>
+
+<script>
+(function () {
+  var now = new Date(), h = now.getHours();
+  document.getElementById('hello').textContent =
+    h < 5 ? 'Up late, nerds?' : h < 12 ? 'Good morning, nerds' : h < 17 ? 'Good afternoon, nerds' : 'Good evening, nerds';
+  document.getElementById('today').textContent =
+    now.toLocaleDateString('en-CA', { weekday: 'long', month: 'long', day: 'numeric' });
+})();
+</script>
 </body>
 </html>
