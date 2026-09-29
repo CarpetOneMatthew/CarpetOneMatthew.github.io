@@ -1,0 +1,4 @@
+# carpetonerd.ca is for Red Deer Carpet One staff only.
+# Ask every search engine to stay out of the whole site, including the tools under it.
+User-agent: *
+Disallow: /
